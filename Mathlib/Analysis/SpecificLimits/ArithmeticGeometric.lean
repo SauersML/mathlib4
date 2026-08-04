@@ -20,6 +20,7 @@ An arithmetic-geometric sequence is a sequence defined by the recurrence relatio
 
 ## Main statements
 
+* `arithGeom_eq_iterate`: `arithGeom a b u₀ n = (a * · + b)^[n] u₀`
 * `arithGeom_eq`: for `a ≠ 1`, `arithGeom a b u₀ n = a ^ n * (u₀ - (b / (1 - a))) + b / (1 - a)`
 * `tendsto_arithGeom_atTop_of_one_lt`: if `1 < a` and `b / (1 - a) < u₀`, then `arithGeom a b u₀ n`
   tends to `+∞` as `n` tends to `+∞`.
@@ -46,6 +47,14 @@ def arithGeom [Mul R] [Add R] (a b u₀ : R) : ℕ → R
 
 lemma arithGeom_succ [Mul R] [Add R] (n : ℕ) :
     arithGeom a b u₀ (n + 1) = a * arithGeom a b u₀ n + b := rfl
+
+/-- An arithmetic-geometric sequence is given by iterating the affine map `fun x ↦ a * x + b`.
+This is the affine analogue of `mul_left_iterate`. -/
+lemma arithGeom_eq_iterate [Mul R] [Add R] (n : ℕ) :
+    arithGeom a b u₀ n = (a * · + b)^[n] u₀ := by
+  induction n with
+  | zero => rfl
+  | succ n hn => rw [arithGeom_succ, hn, Function.iterate_succ_apply']
 
 lemma arithGeom_eq_add_sum [CommSemiring R] (n : ℕ) :
     arithGeom a b u₀ n = a ^ n * u₀ + b * ∑ k ∈ Finset.range n, a ^ k := by
